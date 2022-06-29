@@ -10,7 +10,7 @@ import CoreLocation
 
 class WeatherManager {
     func getCurrentWeather(lat: CLLocationDegrees, lon: CLLocationDegrees) async throws -> CurrentWeatherModel {
-        guard let url = URL(string: "https://api.openweathermap.org/data/2.5/weather?lat=\(lat)&lon=\(lon)&appid=ea53fcdc9f26cf225790797209e83b11&units=metric") else {
+        guard let url = URL(string: Constants.baseAPIURL + "data/2.5/weather?lat=\(lat)&lon=\(lon)&appid=\(Constants.apiKEY)&units=metric") else {
             fatalError("Missing URL")
         }
         
@@ -23,6 +23,24 @@ class WeatherManager {
         }
         
         let decodedData = try JSONDecoder().decode(CurrentWeatherModel.self, from: data)
+        
+        return decodedData
+    }
+    
+    func getAirPollutionData(lat: CLLocationDegrees, lon: CLLocationDegrees) async throws -> AirPollutionModel {
+        guard let url = URL(string: Constants.baseAPIURL + "/data/2.5/air_pollution?lat=\(lat)&lon=\(lon)&appid=\(Constants.apiKEY)") else {
+            fatalError("Missing URL")
+        }
+        
+        let task = URLRequest(url: url)
+        
+        let (data, response) = try await URLSession.shared.data(for: task)
+        
+        guard (response as? HTTPURLResponse)?.statusCode == 200 else {
+            fatalError("Error fetching weather data")
+        }
+        
+        let decodedData = try JSONDecoder().decode(AirPollutionModel.self, from: data)
         
         return decodedData
     }
