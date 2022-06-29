@@ -9,6 +9,27 @@ import SwiftUI
 
 struct WeatherView: View {
     var weather: CurrentWeatherModel
+    var airPollution: AirPollutionModel
+    
+    var rows: [GridItem] = [
+        GridItem(.fixed(40), alignment: .leading),
+        GridItem(.fixed(40), alignment: .leading),
+    ]
+    
+    struct airQualityItem: Identifiable {
+        let id: String = UUID().uuidString
+        let name: String
+        let icon: String
+    }
+    
+    let airQualityItems: [airQualityItem] = [
+        airQualityItem(name: "Real Feel", icon: "cloud.sun"),
+        airQualityItem(name: "Wind", icon: "wind"),
+        airQualityItem(name: "SO2", icon: "drop"),
+        airQualityItem(name: "Humidity", icon: "cloud.rain"),
+        airQualityItem(name: "Pressure", icon: "lungs"),
+        airQualityItem(name: "O3", icon: "cloud"),
+    ]
     
     var body: some View {
         ZStack {
@@ -131,10 +152,43 @@ struct WeatherView: View {
                         .frame(height: UIScreen.main.bounds.height/5)
                         .shadow(color: .gray.opacity(0.3), radius: 10, x: 0, y: 5)
                         .overlay(
-                            VStack {
-                                HStack {
+                            VStack(alignment: .leading) {
+                                HStack(spacing: 10) {
+                                    Image(systemName: "cloud.rain")
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fill)
+                                        .frame(width: 30, height: 30)
+                                        .foregroundColor(.purple)
                                     
+                                    Text("Air Quality")
+                                        .font(.system(size: 18))
+                                        .fontWeight(.bold)
+                                        .foregroundColor(.black)
                                 }
+                                
+                                LazyHGrid(rows: rows, spacing: 20) {
+                                    ForEach(airQualityItems) { item in
+                                        HStack(spacing: 10) {
+                                            Image(systemName: item.icon)
+                                                .resizable()
+                                                .aspectRatio(contentMode: .fit)
+                                                .frame(width: 30, height: 30)
+                                                .foregroundColor(.purple)
+                                            
+                                            VStack(alignment: .leading) {
+                                                Text(item.name)
+                                                    .font(.system(size: 12))
+                                                    .fontWeight(.thin)
+                                                    .foregroundColor(.black)
+                                                Text("\(getValueForItem(value: item.name, weather: weather, air: airPollution).roundDouble())")
+                                                    .font(.system(size: 14))
+                                                    .fontWeight(.bold)
+                                                    .foregroundColor(.black)
+                                            }
+                                        }
+                                    }
+                                }
+                                
                             }
                         )
                 }
@@ -150,10 +204,29 @@ struct WeatherView: View {
         
         return dateFormatter.string(from: date)
     }
+    
+    func getValueForItem(value: String, weather: CurrentWeatherModel, air: AirPollutionModel) -> Double {
+        switch value {
+        case "Real Feel":
+            return weather.main.feels_like
+        case "Wind":
+            return weather.wind.speed
+        case "SO2":
+            return air.list.first?.components.so2 ?? 0
+        case "Humidity":
+            return weather.main.humidity
+        case "Pressure":
+            return weather.main.pressure
+        case "O3":
+            return air.list.first?.components.o3 ?? 0
+        default:
+            return 0
+        }
+    }
 }
 
 struct WeatherView_Previews: PreviewProvider {
     static var previews: some View {
-        WeatherView(weather: CurrentWeatherModel(coord: CurrentWeatherModel.CoordinatesResponse(lon: 0, lat: 0), weather: [CurrentWeatherModel.WeatherResponse(id: 0, main: "", description: "Rainy", icon: "")], main: CurrentWeatherModel.MainResponse(temp: 20.5, feels_like: 22.4, temp_min: 0, temp_max: 0, pressure: 0, humidity: 0), name: "Rosiori", wind: CurrentWeatherModel.WindResponse(speed: 0, deg: 0)))
+        WeatherView(weather: CurrentWeatherModel(coord: CurrentWeatherModel.CoordinatesResponse(lon: 0, lat: 0), weather: [CurrentWeatherModel.WeatherResponse(id: 0, main: "", description: "Rainy", icon: "")], main: CurrentWeatherModel.MainResponse(temp: 20.5, feels_like: 22.4, temp_min: 0, temp_max: 0, pressure: 0, humidity: 0), name: "Rosiori", wind: CurrentWeatherModel.WindResponse(speed: 3.4, deg: 0)), airPollution: AirPollutionModel(list: [AirPollutionModel.AirPollutionModelList(main: AirPollutionModel.AirPollutionModelMain(aqi: 1), components: AirPollutionModel.AirPollutionModelComponents(co: 1, no: 1, no2: 1, o3: 1, so2: 1, pm2_5: 1, pm10: 1, nh3: 1))]))
     }
 }
