@@ -20,6 +20,7 @@
 		4EC3CC05286C81CC00385249 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EC3CC04286C81CC00385249 /* HomeView.swift */; };
 		4EC3CC07286C942E00385249 /* AirPollutionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EC3CC06286C942E00385249 /* AirPollutionModel.swift */; };
 		4EC3CC0A286C952B00385249 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EC3CC09286C952B00385249 /* Constants.swift */; };
+		4EC3CC0C286CD0CE00385249 /* DailyWeatherModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EC3CC0B286CD0CE00385249 /* DailyWeatherModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,6 +38,7 @@
 		4EC3CC04286C81CC00385249 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		4EC3CC06286C942E00385249 /* AirPollutionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AirPollutionModel.swift; sourceTree = "<group>"; };
 		4EC3CC09286C952B00385249 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		4EC3CC0B286CD0CE00385249 /* DailyWeatherModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyWeatherModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -114,6 +116,7 @@
 			children = (
 				4EC3CBFE286C7E4100385249 /* CurrentWeatherModel.swift */,
 				4EC3CC06286C942E00385249 /* AirPollutionModel.swift */,
+				4EC3CC0B286CD0CE00385249 /* DailyWeatherModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -198,6 +201,7 @@
 			files = (
 				4EC3CBFC286C7CA200385249 /* WeatherManager.swift in Sources */,
 				4EC3CC0A286C952B00385249 /* Constants.swift in Sources */,
+				4EC3CC0C286CD0CE00385249 /* DailyWeatherModel.swift in Sources */,
 				4EC3CC03286C812500385249 /* Extensions.swift in Sources */,
 				4EC3CC05286C81CC00385249 /* HomeView.swift in Sources */,
 				4EC3CC07286C942E00385249 /* AirPollutionModel.swift in Sources */,

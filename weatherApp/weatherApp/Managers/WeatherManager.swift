@@ -44,4 +44,22 @@ class WeatherManager {
         
         return decodedData
     }
+    
+    func getDailyWeather(lat: CLLocationDegrees, lon: CLLocationDegrees) async throws -> [DailyWeatherModel.DayWeatherModel] {
+        guard let url = URL(string: Constants.baseAPIURL + "/data/2.5/forecast/daily?lat=\(lat)&lon=\(lon)&cnt=16&appid=\(Constants.apiKEY)") else {
+            fatalError("Missing URL")
+        }
+        
+        let task = URLRequest(url: url)
+        
+        let (data, response) = try await URLSession.shared.data(for: task)
+        
+        guard (response as? HTTPURLResponse)?.statusCode == 200 else {
+            fatalError("Error fetching weather data")
+        }
+        
+        let decodedData = try JSONDecoder().decode(DailyWeatherModel.self, from: data)
+        
+        return decodedData.list
+    }
 }
