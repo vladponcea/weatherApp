@@ -7,22 +7,24 @@
 
 import Foundation
 
-struct DailyWeatherModel: Codable {
-    let list: [DayWeatherModel]
+struct DailyWeatherModel: Codable, Hashable {
+    let daily: [DayWeatherModel]
+//    let wind_speed: Double
     
-    struct DayWeatherModel: Codable {
-        let temp: TempDayWeatherModel
-        let feels_like: FeelsLikeDayWeatherModel
+    struct DayWeatherModel: Codable, Hashable {
+        let feels_like: DailyFeelsLikeModel
+        let temp: DailyTempModel
     }
     
-    struct TempDayWeatherModel: Codable {
+    struct DailyFeelsLikeModel: Codable, Hashable {
+        let day: Double
+        let night: Double
+    }
+    
+    struct DailyTempModel: Codable, Hashable {
         let day: Double
         let night: Double
         let min: Double
         let max: Double
-    }
-    
-    struct FeelsLikeDayWeatherModel: Codable {
-        let day: Double
     }
 }

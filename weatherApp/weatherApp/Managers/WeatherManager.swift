@@ -10,7 +10,7 @@ import CoreLocation
 
 class WeatherManager {
     func getCurrentWeather(lat: CLLocationDegrees, lon: CLLocationDegrees) async throws -> CurrentWeatherModel {
-        guard let url = URL(string: Constants.baseAPIURL + "data/2.5/weather?lat=\(lat)&lon=\(lon)&appid=\(Constants.apiKEY)&units=metric") else {
+        guard let url = URL(string: Constants.baseAPIURL + "/data/2.5/weather?lat=\(lat)&lon=\(lon)&appid=\(Constants.apiKEY)&units=metric") else {
             fatalError("Missing URL")
         }
         
@@ -45,8 +45,8 @@ class WeatherManager {
         return decodedData
     }
     
-    func getDailyWeather(lat: CLLocationDegrees, lon: CLLocationDegrees) async throws -> [DailyWeatherModel.DayWeatherModel] {
-        guard let url = URL(string: Constants.baseAPIURL + "/data/2.5/forecast/daily?lat=\(lat)&lon=\(lon)&cnt=16&appid=\(Constants.apiKEY)") else {
+    func getDailyWeather(lat: CLLocationDegrees, lon: CLLocationDegrees) async throws -> DailyWeatherModel {
+        guard let url = URL(string: Constants.baseAPIURL + "/data/2.5/onecall?lat=\(lat)&lon=\(lon)&exclude=current,minutely,hourly,alerts&units=metric&appid=\(Constants.apiKEY)") else {
             fatalError("Missing URL")
         }
         
@@ -60,6 +60,6 @@ class WeatherManager {
         
         let decodedData = try JSONDecoder().decode(DailyWeatherModel.self, from: data)
         
-        return decodedData.list
+        return decodedData
     }
 }

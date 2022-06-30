@@ -10,11 +10,20 @@ import SwiftUI
 struct WeatherView: View {
     var weather: CurrentWeatherModel
     var airPollution: AirPollutionModel
+    var weeklyForecast: DailyWeatherModel
+    
+    var currentDay: Date = Date()
     
     var rows: [GridItem] = [
         GridItem(.fixed(40), alignment: .leading),
         GridItem(.fixed(40), alignment: .leading),
     ]
+    
+    struct _weeklyForecastModel: Hashable {
+        let day: String
+        let date: String
+        let forecast: DailyWeatherModel.DayWeatherModel
+    }
     
     struct airQualityItem: Identifiable {
         let id: String = UUID().uuidString
@@ -96,6 +105,7 @@ struct WeatherView: View {
                     })
                 }
                 
+                //body
                 VStack(spacing: 20) {
                     RoundedRectangle(cornerRadius: 36)
                         .fill(LinearGradient(colors: [Color.purple, Color.blue], startPoint: .topLeading, endPoint: .bottomTrailing))
@@ -127,20 +137,11 @@ struct WeatherView: View {
                                     }
                                 }
                                 
-                                HStack {
-                                    VStack(alignment: .leading) {
-                                        Text(weather.weather.first?.description ?? "")
-                                            .font(.system(size: 20))
-                                            .fontWeight(.bold)
-                                            .foregroundColor(.white)
-                                        
-                                        Text(getCurrentDate())
-                                            .font(.system(size: 16))
-                                            .fontWeight(.semibold)
-                                            .foregroundColor(.white)
-                                    }
-                                }
-                                .offset(y: -35)
+                                Text(getCurrentDate())
+                                    .font(.system(size: 16))
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(.white)
+                                    .offset(y: -20)
                             }
                                 .padding(15)
 //                                .frame(height: UIScreen.main.bounds.height/5)
@@ -191,7 +192,80 @@ struct WeatherView: View {
                                 
                             }
                         )
+                    
+                    //weekly forecast
+                    VStack(spacing: 20) {
+                        //weekly forecast text
+                        HStack {
+                            Text("Weekly forecast")
+                                .font(.system(size: 20))
+                                .fontWeight(.bold)
+                                .foregroundColor(.black)
+                            
+                            Spacer()
+                            
+                            Button(action: {
+                                
+                            }, label: {
+                                HStack(spacing: 5) {
+                                    Text("Next month")
+                                        .font(.system(size: 15))
+                                        .fontWeight(.semibold)
+                                    
+                                    Image(systemName: "chevron.right")
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(width: 10, height: 10)
+                                }
+                                .foregroundColor(.purple)
+                            })
+                        }
+                        let days = get16Days()
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 60) {
+                                ForEach(days, id: \.self) { day in
+                                    VStack {
+                                        Text(day.day)
+                                            .font(.system(size: 15))
+                                            .fontWeight(.semibold)
+                                            .foregroundColor(.black)
+                                        
+                                        Text(day.date)
+                                            .font(.system(size: 10))
+                                            .fontWeight(.light)
+                                            .foregroundColor(.gray)
+                                        
+                                        Image("cloudy")
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fit)
+                                            .frame(width: 30, height: 30)
+                                        
+                                        Text("\(day.forecast.temp.day.roundDouble())")
+                                            .font(.system(size: 20))
+                                            .fontWeight(.bold)
+                                            .foregroundColor(.black)
+                                        
+                                        VStack(alignment: .leading) {
+                                            Text("Min: \(day.forecast.temp.min.roundDouble())")
+                                                .font(.system(size: 10))
+                                                .fontWeight(.light)
+                                                .foregroundColor(.gray)
+                                            
+                                            Text("Max: \(day.forecast.temp.max.roundDouble())")
+                                                .font(.system(size: 10))
+                                                .fontWeight(.light)
+                                                .foregroundColor(.gray)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
+                    
                 }
+                
+                Spacer()
             }
             .frame(width: UIScreen.main.bounds.width-50)
         }
@@ -203,6 +277,26 @@ struct WeatherView: View {
         dateFormatter.dateFormat = "EEEE, d MMMM"
         
         return dateFormatter.string(from: date)
+    }
+    
+    func get16Days() -> [_weeklyForecastModel] {
+        var dates: [_weeklyForecastModel] = []
+        var today: Date = Date()
+        for i in 0...6 {
+            let calendar = Calendar.current
+            let midnight = calendar.startOfDay(for: today)
+            let tomorrow = calendar.date(byAdding: .day, value: 1, to: midnight)!
+            
+            let dateFormatterDay = DateFormatter()
+            let dateFormatterDate = DateFormatter()
+            dateFormatterDay.dateFormat = "E"
+            dateFormatterDate.dateFormat = "d MMMM"
+            
+            dates.append(_weeklyForecastModel(day: dateFormatterDay.string(from: tomorrow), date: dateFormatterDate.string(from: tomorrow), forecast: weeklyForecast.daily[i]))
+            today = tomorrow
+        }
+//        print(dates)
+        return dates
     }
     
     func getValueForItem(value: String, weather: CurrentWeatherModel, air: AirPollutionModel) -> Double {
@@ -227,6 +321,15 @@ struct WeatherView: View {
 
 struct WeatherView_Previews: PreviewProvider {
     static var previews: some View {
-        WeatherView(weather: CurrentWeatherModel(coord: CurrentWeatherModel.CoordinatesResponse(lon: 0, lat: 0), weather: [CurrentWeatherModel.WeatherResponse(id: 0, main: "", description: "Rainy", icon: "")], main: CurrentWeatherModel.MainResponse(temp: 20.5, feels_like: 22.4, temp_min: 0, temp_max: 0, pressure: 0, humidity: 0), name: "Rosiori", wind: CurrentWeatherModel.WindResponse(speed: 3.4, deg: 0)), airPollution: AirPollutionModel(list: [AirPollutionModel.AirPollutionModelList(main: AirPollutionModel.AirPollutionModelMain(aqi: 1), components: AirPollutionModel.AirPollutionModelComponents(co: 1, no: 1, no2: 1, o3: 1, so2: 1, pm2_5: 1, pm10: 1, nh3: 1))]))
+        WeatherView(weather: CurrentWeatherModel(coord: CurrentWeatherModel.CoordinatesResponse(lon: 0, lat: 0), weather: [CurrentWeatherModel.WeatherResponse(id: 0, main: "", description: "", icon: "")], main: CurrentWeatherModel.MainResponse(temp: 0, feels_like: 0, temp_min: 0, temp_max: 0, pressure: 0, humidity: 0), name: "Rosiori", wind: CurrentWeatherModel.WindResponse(speed: 0, deg: 0)), airPollution: AirPollutionModel(list: [AirPollutionModel.AirPollutionModelList(main: AirPollutionModel.AirPollutionModelMain(aqi: 1), components: AirPollutionModel.AirPollutionModelComponents(co: 0, no: 0, no2: 0, o3: 0, so2: 0, pm2_5: 0, pm10: 0, nh3: 0))]), weeklyForecast: DailyWeatherModel(
+            daily: [
+                DailyWeatherModel.DayWeatherModel(feels_like: DailyWeatherModel.DailyFeelsLikeModel(day: 0, night: 0), temp: DailyWeatherModel.DailyTempModel(day: 0, night: 0, min: 0, max: 0)),
+                DailyWeatherModel.DayWeatherModel(feels_like: DailyWeatherModel.DailyFeelsLikeModel(day: 0, night: 0), temp: DailyWeatherModel.DailyTempModel(day: 0, night: 0, min: 0, max: 0)),
+                DailyWeatherModel.DayWeatherModel(feels_like: DailyWeatherModel.DailyFeelsLikeModel(day: 0, night: 0), temp: DailyWeatherModel.DailyTempModel(day: 0, night: 0, min: 0, max: 0)),
+                DailyWeatherModel.DayWeatherModel(feels_like: DailyWeatherModel.DailyFeelsLikeModel(day: 0, night: 0), temp: DailyWeatherModel.DailyTempModel(day: 0, night: 0, min: 0, max: 0)),
+                DailyWeatherModel.DayWeatherModel(feels_like: DailyWeatherModel.DailyFeelsLikeModel(day: 0, night: 0), temp: DailyWeatherModel.DailyTempModel(day: 0, night: 0, min: 0, max: 0)),
+                DailyWeatherModel.DayWeatherModel(feels_like: DailyWeatherModel.DailyFeelsLikeModel(day: 0, night: 0), temp: DailyWeatherModel.DailyTempModel(day: 0, night: 0, min: 0, max: 0)),
+                DailyWeatherModel.DayWeatherModel(feels_like: DailyWeatherModel.DailyFeelsLikeModel(day: 0, night: 0), temp: DailyWeatherModel.DailyTempModel(day: 0, night: 0, min: 0, max: 0)),
+            ]))
     }
 }
