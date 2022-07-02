@@ -12,23 +12,19 @@ struct HomeView: View {
     @StateObject var locationManager = LocationManager()
     
     var weatherManager = WeatherManager()
-    @State var weather: CurrentWeatherModel?
-    @State var airPollution: AirPollutionModel?
-    @State var weeklyForecast: DailyWeatherModel?
+    @State var weather: WeatherModel?
     
     var body: some View {
         ZStack {
             VStack {
                 if let location = locationManager.location {
-                    if let weather = weather, let airPollution = airPollution, let weeklyForecast = weeklyForecast {
-                        WeatherView(weather: weather, airPollution: airPollution, weeklyForecast: weeklyForecast)
+                    if let weather = weather {
+                        WeatherView(weather: weather)
                     } else {
                         LoadingView()
                             .task {
                                 do {
-                                    weather = try await weatherManager.getCurrentWeather(lat: location.latitude, lon: location.longitude)
-                                    airPollution = try await weatherManager.getAirPollutionData(lat: location.latitude, lon: location.longitude)
-                                    weeklyForecast = try await weatherManager.getDailyWeather(lat: location.latitude, lon: location.longitude)
+                                    weather = try await weatherManager.getWeatherData(lat: location.latitude, lon: location.longitude)
                                 } catch {
                                     print("Error getting weather: \(error)")
                                 }
