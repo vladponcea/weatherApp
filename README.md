@@ -5,4 +5,4 @@ Simple weather app that connects to https://openweathermap.org/api
 
 # Demo
 
-https://user-images.githubusercontent.com/50986606/177744404-b0bd0636-2ed2-464a-a1e4-ebee29b82e7c.MP4
+![weatherAppGif](https://user-images.githubusercontent.com/50986606/177744632-42bd7c33-73a6-47cb-b4c3-65f3e7e820d5.gif)
