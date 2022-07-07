@@ -12,38 +12,36 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     let manager = CLLocationManager()
     
     @Published var location: CLLocationCoordinate2D?
-    @Published var locationStatus: Bool = false
-    @Published var isLoading = false
     
     override init() {
         super.init()
         manager.delegate = self
+//        if !CLLocationManager.locationServicesEnabled() {
+//            manager.requestWhenInUseAuthorization()
+//            manager.requestAlwaysAuthorization()
+//        }
+    }
+    
+    func checkLocationStatus() -> Bool {
         if CLLocationManager.locationServicesEnabled() {
             switch manager.authorizationStatus {
             case .notDetermined, .restricted, .denied:
-                locationStatus = false
-            case .authorized, .authorizedAlways, .authorizedWhenInUse:
-                locationStatus = true
+                return false
+            case .authorizedAlways, .authorizedWhenInUse:
+                return true
             default:
-                locationStatus = false
+                return false
             }
-        } else {
-            locationStatus = false
         }
+        return false
     }
     
-    func requestLocation() {
-        isLoading = true
-        manager.requestLocation()
-    }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         location = locations.first?.coordinate
-        isLoading = false
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        print("Error getting location...", error)
-        isLoading = false
+        print("Error getting location...\n", error)
     }
 }

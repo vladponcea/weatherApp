@@ -32,7 +32,7 @@ struct WeatherView: View {
                                         
                                     }, label: {
                                         RoundedRectangle(cornerRadius: 32)
-                                            .fill(.purple.opacity(0.5))
+                                            .fill(LinearGradient(colors: [Color.purple, Color.blue], startPoint: .topLeading, endPoint: .bottomTrailing))
                                             .frame(width: UIScreen.main.bounds.width/5, height: UIScreen.main.bounds.height/4)
                                     })
                                 } else {

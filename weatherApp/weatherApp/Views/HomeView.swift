@@ -34,14 +34,16 @@ struct HomeView: View {
                             }
                     }
                 } else {
-                    if locationManager.isLoading {
-                        LoadingView()
-                    } else {
-                        WelcomeView()
-                            .environmentObject(locationManager)
-                    }
+                    LoadingView()
+                        .task {
+                            locationManager.manager.requestLocation()
+                        }
                 }
             }
+        }
+        .onAppear {
+            locationManager.manager.requestAlwaysAuthorization()
+            locationManager.manager.requestWhenInUseAuthorization()
         }
     }
 }
