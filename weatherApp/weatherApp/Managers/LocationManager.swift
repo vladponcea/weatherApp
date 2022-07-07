@@ -12,11 +12,24 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     let manager = CLLocationManager()
     
     @Published var location: CLLocationCoordinate2D?
+    @Published var locationStatus: Bool = false
     @Published var isLoading = false
     
     override init() {
         super.init()
         manager.delegate = self
+        if CLLocationManager.locationServicesEnabled() {
+            switch manager.authorizationStatus {
+            case .notDetermined, .restricted, .denied:
+                locationStatus = false
+            case .authorized, .authorizedAlways, .authorizedWhenInUse:
+                locationStatus = true
+            default:
+                locationStatus = false
+            }
+        } else {
+            locationStatus = false
+        }
     }
     
     func requestLocation() {

@@ -9,6 +9,8 @@ import SwiftUI
 
 struct HomeView: View {
     
+    @EnvironmentObject var vm: WeatherViewModel
+    
     @StateObject var locationManager = LocationManager()
     
     var weatherManager = WeatherManager()
@@ -20,13 +22,14 @@ struct HomeView: View {
                 if let location = locationManager.location {
                     if let weather = weather {
                         WeatherView(weather: weather)
+                            .environmentObject(WeatherViewModel())
                     } else {
                         LoadingView()
                             .task {
                                 do {
                                     weather = try await weatherManager.getWeatherData(lat: location.latitude, lon: location.longitude)
                                 } catch {
-                                    print("Error getting weather: \(error)")
+                                    print("Error getting weather data...")
                                 }
                             }
                     }

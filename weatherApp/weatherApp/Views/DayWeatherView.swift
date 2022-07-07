@@ -9,6 +9,7 @@ import SwiftUI
 
 struct DayWeatherView: View {
     var dayWeather: DayWeatherModel
+    var date: String
     
     var currentDay: Date = Date()
     
@@ -126,7 +127,7 @@ struct DayWeatherView: View {
                                     }
                                 }
                                 
-                                Text(getCurrentDate())
+                                Text(date)
                                     .font(.system(size: 16))
                                     .fontWeight(.semibold)
                                     .foregroundColor(.white)
@@ -246,6 +247,6 @@ struct DayWeatherView: View {
 
 struct DayWeatherView_Previews: PreviewProvider {
     static var previews: some View {
-        DayWeatherView(dayWeather: weatherExample.daily[0])
+        DayWeatherView(dayWeather: weatherExample.daily[0], date: "Thursday, 7 July")
     }
 }

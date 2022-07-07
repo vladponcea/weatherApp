@@ -13,45 +13,47 @@ struct WeatherView: View {
     
     let weather: WeatherModel
     
-    @State var days: [_DayWeatherModel] = []
+    @State var selectedDay: DayWeatherModel = weatherExample.daily[0]
+    @State var selectedDate: String = ""
     
     var body: some View {
         ZStack {
             Color.gray.opacity(0.2).ignoresSafeArea()
             
             VStack(spacing: 20) {
-                DayWeatherView(dayWeather: vm.convertDay(day: vm.selectedDay))
+                DayWeatherView(dayWeather: selectedDay, date: selectedDate)
                 
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 50) {
-                        ForEach($vm.days, id: \.self) { $day in
+                        ForEach(vm.days, id: \.day) { day in
                             ZStack {
-                                Button(action: {
-//                                    day.selected.toggle()
-                                    if vm.selectedDay != dayWeatherExample[0] {
-                                        guard let index = vm.days.firstIndex(where: { $0.day == vm.selectedDay.day }) else {
-                                            return
-                                        }
-                                        vm.days[index].selected = false
-                                        vm.selectedDay = day
-                                        day.selected = true
-                                    }
-                                }, label: {
-                                    RoundedRectangle(cornerRadius: 32)
-                                        .fill(.purple.opacity(0.5))
-                                        .frame(width: UIScreen.main.bounds.width/7, height: UIScreen.main.bounds.height/4)
-                                        .opacity(day.selected ? 1 : 0)
-                                })
+                                if selectedDay == day.weather {
+                                    Button(action: {
+                                        
+                                    }, label: {
+                                        RoundedRectangle(cornerRadius: 32)
+                                            .fill(.purple.opacity(0.5))
+                                            .frame(width: UIScreen.main.bounds.width/5, height: UIScreen.main.bounds.height/4)
+                                    })
+                                } else {
+                                    Button(action: {
+                                        self.selectedDay = day.weather
+                                        self.selectedDate = day.day + " " + day.date
+                                    }, label: {
+                                        RoundedRectangle(cornerRadius: 32)
+                                            .fill(.clear)
+                                            .frame(width: UIScreen.main.bounds.width/5, height: UIScreen.main.bounds.height/4)
+                                    })
+                                }
                                 
                                 VStack(spacing: 20) {
                                     VStack {
-                                        Text("\(day.day)")
-                                            .font(.system(size: 16))
+                                        Text(day.day)
+                                            .font(.system(size: 20))
                                             .fontWeight(.bold)
                                             .foregroundColor(.black)
-                                        
-                                        Text("\(day.date)")
-                                            .font(.system(size: 11))
+                                        Text(day.date)
+                                            .font(.system(size: 15))
                                             .fontWeight(.light)
                                             .foregroundColor(.gray)
                                     }
@@ -61,35 +63,24 @@ struct WeatherView: View {
                                         .aspectRatio(contentMode: .fit)
                                         .frame(width: 50, height: 50)
                                     
-                                    VStack {
-                                        Text("\(day.weather.temp.day.roundDouble())")
-                                            .font(.system(size: 20))
-                                            .fontWeight(.bold)
-                                            .foregroundColor(.black)
-                                        
-                                        VStack(alignment: .leading) {
-                                            Text("Min: \(day.weather.temp.min.roundDouble())")
-                                                .font(.system(size: 11))
-                                                .fontWeight(.light)
-                                                .foregroundColor(.gray)
-                                            
-                                            Text("Max: \(day.weather.temp.max.roundDouble())")
-                                                .font(.system(size: 11))
-                                                .fontWeight(.light)
-                                                .foregroundColor(.gray)
-                                        }
-                                    }
+                                    Text("\(day.weather.temp.day.roundDouble())°")
+                                        .font(.system(size: 25))
+                                        .fontWeight(.bold)
+                                        .foregroundColor(.black)
                                 }
                             }
                         }
                     }
                 }
-                
-//                Spacer()
             }
             .frame(width: UIScreen.main.bounds.width-50)
-            .animation(.default, value: vm.days)
         }
+        .onAppear {
+            vm.initalizeDays(for: self.weather)
+            self.selectedDay = vm.days.first?.weather ?? weatherExample.daily[0]
+            self.selectedDate = vm.days.first?.day ?? "" + " " + (vm.days.first?.date ?? "")
+        }
+        .animation(.default, value: self.selectedDay)
     }
 }
 
