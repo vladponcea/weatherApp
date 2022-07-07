@@ -6,12 +6,17 @@
 //
 
 import SwiftUI
+import CoreLocation
 
 struct DayWeatherView: View {
+    
+    @StateObject var locationManager = LocationManager()
+    
     var dayWeather: DayWeatherModel
     var date: String
     
     var currentDay: Date = Date()
+    @State var currentCity: String = ""
     
     var rows: [GridItem] = [
         GridItem(.fixed(40), alignment: .leading),
@@ -70,7 +75,7 @@ struct DayWeatherView: View {
                             .frame(width: 20, height: 20)
                             .foregroundColor(.blue)
                         
-                        Text("")
+                        Text(self.currentCity)
                             .font(.system(size: 20))
                             .fontWeight(.bold)
                             .foregroundColor(.black)
@@ -214,6 +219,25 @@ struct DayWeatherView: View {
                 }
             }
             .frame(width: UIScreen.main.bounds.width-50)
+        }
+        .onAppear {
+            self.locationManager.getPlace(for: CLLocation(latitude: self.locationManager.location?.latitude ?? 0, longitude: self.locationManager.location?.longitude ?? 0), completion: { placemark in
+                guard let placemark = placemark else {
+                    return
+                }
+                
+                if let country = placemark.country {
+                    currentCity = country
+                }
+                
+                if let state = placemark.administrativeArea {
+                    self.currentCity = state
+                }
+                
+                if let town = placemark.locality {
+                    self.currentCity = town
+                }
+            })
         }
     }
     
